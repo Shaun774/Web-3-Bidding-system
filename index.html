@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BidHub - Decentralized Bidding Platform</title>
+    <script type="module" src="app.js" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --dark: #2d3436;
+            --light: #f5f6fa;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #d63031;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: var(--dark);
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo h1 {
+            font-weight: 600;
+            font-size: 1.8rem;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+        }
+
+        #connectButton {
+            background-color: white;
+            color: var(--primary);
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #connectButton:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .wallet-icon {
+            font-size: 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .hero h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: #636e72;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(108, 92, 231, 0.3);
+        }
+
+        .card-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .card p {
+            color: #636e72;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-button:hover {
+            background-color: #5649c5;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: var(--primary);
+        }
+
+        #create-project,
+        #projects,
+        #bid-section,
+        #milestones {
+            background-color: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #dfe6e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        #createProjectButton,
+        #placeBidButton {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #createProjectButton:hover,
+        #placeBidButton:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(108, 92, 231, 0.3);
+        }
+
+        #projectList,
+        #milestoneList {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .project-card,
+        .milestone-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 1px solid #dfe6e9;
+            transition: all 0.3s ease;
+        }
+
+        .project-card:hover,
+        .milestone-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(108, 92, 231, 0.1);
+        }
+
+        .project-card h3,
+        .milestone-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+
+        .project-card p,
+        .milestone-card p {
+            color: #636e72;
+            margin-bottom: 1rem;
+        }
+
+        .project-meta {
+            display: flex;
+            justify-content: space-between;
+            color: #636e72;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .project-budget {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #636e72;
+            font-size: 0.9rem;
+        }
+
+        footer {
+            background-color: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--secondary);
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .social-icons a {
+            color: white;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-icons a:hover {
+            color: var(--secondary);
+            transform: translateY(-3px);
+        }
+
+        @media (max-width: 768px) {
+            .hero h2 {
+                font-size: 2rem;
+            }
+
+            .card-section {
+                grid-template-columns: 1fr;
+            }
+
+            #projectList,
+            #milestoneList {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <i class="fas fa-gavel logo-icon"></i>
+            <h1>BidHub</h1>
+        </div>
+        <button id="connectButton">
+            <i class="fas fa-wallet wallet-icon"></i>
+            Connect Wallet
+        </button>
+    </header>
+
+    <div class="container">
+        <section class="hero">
+            <h2>Decentralized Bidding Platform</h2>
+            <p>Connect with freelancers and clients in a transparent, secure environment powered by blockchain
+                technology.</p>
+            <button class="cta-button">
+                <i class="fas fa-rocket"></i>
+                Get Started
+            </button>
+        </section>
+
+        <div class="card-section">
+            <div class="card">
+                <i class="fas fa-project-diagram card-icon"></i>
+                <h3>Create Projects</h3>
+                <p>Post your project requirements and budget to find the perfect freelancer for your needs.</p>
+                <a href="create.html">
+                    <button class="card-button">
+                        <i class="fas fa-plus"></i>
+                        New Project
+                    </button>
+                </a>
+            </div>
+
+            <div class="card">
+                <i class="fas fa-hand-holding-usd card-icon"></i>
+                <h3>Place Bids</h3>
+                <p>Browse available projects and submit your competitive bids to win exciting opportunities.</p>
+                <a href="list.html" >
+                    <button class="card-button" onclick="loadProjects()">
+                        <i class="fas fa-search"></i>
+                        Find Projects
+                    </button>
+                </a>
+            </div>
+
+            <div class="card">
+                <i class="fas fa-tasks card-icon"></i>
+                <h3>Manage Milestones</h3>
+                <p>Track project progress and release payments upon successful completion of milestones.</p>
+                <button class="card-button">
+                    <i class="fas fa-chart-line"></i>
+                    Track Progress
+                </button>
+            </div>
+        </div>
+
+        <div class="stats-section">
+            <div class="stat-card">
+                <div class="stat-number">1,245+</div>
+                <div class="stat-label">Projects Completed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">3,892+</div>
+                <div class="stat-label">Active Bids</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">2,156+</div>
+                <div class="stat-label">Happy Clients</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">5,678+</div>
+                <div class="stat-label">ETH Transacted</div>
+            </div>
+        </div>
+
+        <!-- <section id="create-project">
+            <h2 class="section-title">
+                <i class="fas fa-plus-circle"></i>
+                Create a New Project
+            </h2>
+            <div class="form-group">
+                <label for="title">Project Title</label>
+                <input type="text" id="title" placeholder="e.g. Website Development">
+            </div>
+            <div class="form-group">
+                <label for="description">Project Description</label>
+                <textarea id="description" placeholder="Describe your project in detail..."></textarea>
+            </div>
+            <div class="form-group">
+                <label for="budget">Budget (ETH)</label>
+                <input type="number" id="budget" placeholder="e.g. 1.5">
+            </div>
+            <button id="createProjectButton">
+                <i class="fas fa-paper-plane"></i>
+                Create Project
+            </button>
+        </section> -->
+
+        <section id="projects">
+            <h2 class="section-title">
+                <i class="fas fa-bullhorn"></i>
+                Available Projects
+            </h2>
+            <div id="projectList">
+                <!-- Projects will be dynamically inserted here -->
+            </div>
+        </section>
+
+        <!-- <section id="bid-section">
+            <h2 class="section-title">
+                <i class="fas fa-gavel"></i>
+                Place a Bid
+            </h2>
+            <div class="form-group">
+                <label for="bidAmount">Your Bid Amount (ETH)</label>
+                <input type="number" id="bidAmount" placeholder="Enter your bid amount">
+            </div>
+            <button id="placeBidButton">
+                <i class="fas fa-handshake"></i>
+                Submit Bid
+            </button>
+        </section> -->
+
+        <!-- <section id="milestones">
+            <h2 class="section-title">
+                <i class="fas fa-tasks"></i>
+                Project Milestones
+            </h2>
+            <div id="milestoneList">
+
+            </div>
+        </section> -->
+    </div>
+
+    <footer>
+        <div class="footer-links">
+            <a href="#">About Us</a>
+            <a href="#">How It Works</a>
+            <a href="#">FAQ</a>
+            <a href="#">Contact</a>
+        </div>
+        <div class="social-icons">
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-discord"></i></a>
+            <a href="#"><i class="fab fa-github"></i></a>
+            <a href="#"><i class="fab fa-telegram"></i></a>
+        </div>
+        <p>&copy; 2023 BidHub. All rights reserved.</p>
+    </footer>
+
+</body>
+
+</html>

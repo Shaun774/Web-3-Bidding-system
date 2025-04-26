@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Government Projects | BidHub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #27ae60;
+            --warning: #f39c12;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--dark));
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            font-size: 1.8rem;
+            color: var(--secondary);
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .projects-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 2rem 0;
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        select,
+        input {
+            padding: 0.6rem 1rem;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .project-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .project-card-header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+        }
+
+        .project-card-body {
+            padding: 1.5rem;
+        }
+
+        .project-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .budget {
+            font-weight: 600;
+            color: var(--success);
+        }
+
+        .deadline {
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        .requirements {
+            margin: 1rem 0;
+            padding: 1rem;
+            background-color: var(--light);
+            border-radius: 4px;
+        }
+
+        .requirements h4 {
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--secondary);
+            color: var(--secondary);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.3rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-open {
+            background-color: rgba(39, 174, 96, 0.1);
+            color: var(--success);
+        }
+
+        .status-closing {
+            background-color: rgba(241, 196, 15, 0.1);
+            color: var(--warning);
+        }
+
+        .status-urgent {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: var(--accent);
+        }
+
+        @media (max-width: 768px) {
+            .project-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-controls {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-landmark"></i>
+                <h1>Government Bidding Portal</h1>
+            </div>
+            <button id="connectButton" class="btn btn-primary">
+                <i class="fas fa-wallet"></i> Connect Wallet
+            </button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="projects-header">
+            <h2>Current Projects Available for Bidding</h2>
+            <div>
+                <button class="btn btn-outline">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+        </div>
+
+        <div class="filter-controls">
+            <select id="categoryFilter">
+                <option value="">All Categories</option>
+                <option value="transportation">Transportation</option>
+                <option value="water_utilities">Water & Utilities</option>
+                <option value="public_buildings">Public Buildings</option>
+                <option value="environmental">Environmental</option>
+                <option value="urban_development">Urban Development</option>
+                <option value="energy">Energy</option>
+                <option value="public_safety">Public Safety</option>
+            </select>
+
+            <select id="statusFilter">
+                <option value="">All Statuses</option>
+                <option value="open">Open</option>
+                <option value="closing">Closing Soon</option>
+                <option value="urgent">Urgent</option>
+            </select>
+
+            <input type="text" id="searchInput" placeholder="Search projects...">
+        </div>
+
+        <!-- <div class="project-grid" id="projectList">
+            div.
+        </div> -->
+
+        <div class="project-container">
+            
+        </div>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <script type="module" src="app.js"></script>
+</body>
+
+</html>
